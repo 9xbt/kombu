@@ -12,5 +12,7 @@
 #define ALIGN_UP(x, y) (DIV_CEILING(x, y) * y)
 #define ALIGN_DOWN(x, y) ((x / y) * y)
 
-void mmu_install(struct multiboot_info *mbd);
-void mmu_mark_used(void *ptr, size_t page_count);
+void  mmu_install(struct multiboot_info *mbd);
+void  mmu_mark_used(void *ptr, size_t page_count);
+void *mmu_alloc(size_t page_count);
+void  mmu_free(void *ptr, size_t page_count);

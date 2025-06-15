@@ -79,3 +79,55 @@ void mmu_mark_used(void *ptr, size_t page_count) {
     }
     mmu_used_pages += page_count;
 }
+
+uint32_t mmu_find_pages(uint32_t page_count) {
+    uint32_t pages = 0;
+    uint32_t first_page = 0;
+
+    for (uint32_t i = 0; i < mmu_page_count; i++) {
+        if (!bitmap_get(mmu_bitmap, i)) {
+            if (pages == 0) {
+                first_page = i;
+            }
+            pages++;
+            if (pages == page_count) {
+                for (uint32_t j = 0; j < page_count; j++) {
+                    bitmap_set(mmu_bitmap, first_page + j);
+                }
+
+                mmu_used_pages += page_count;
+                return first_page;
+            }
+        } else {
+            pages = 0;
+        }
+    }
+    return 0;
+}
+
+void *mmu_alloc(size_t page_count) {
+    uint32_t pages = mmu_find_pages(page_count);
+    if (!pages) {
+        panic("allocation failed: out of memory");
+    }
+    return (void *)(pages * PAGE_SIZE);
+}
+
+void mmu_free(void *ptr, size_t page_count) {
+    uint32_t page = (uint32_t)ptr / PAGE_SIZE;
+
+    if ((uintptr_t)ptr < KERNEL_PHYS_BASE || page > mmu_bitmap_size * 8) {
+        printf("%s:%d: invalid deallocation @ 0x%p\n", __FILE__, __LINE__, ptr);
+        return;
+    }
+
+    for (uint32_t i = 0; i < page_count; i++) {
+        if (!bitmap_get(mmu_bitmap, page + i)) {
+            printf("%s:%d: double free @ 0x%p\n", __FILE__, __LINE__, ptr);
+            return;
+        }
+        bitmap_clear(mmu_bitmap, page + i);
+    }
+    
+    mmu_used_pages -= page_count;
+}
