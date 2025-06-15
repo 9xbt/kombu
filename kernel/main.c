@@ -1,5 +1,6 @@
 #include <arch/i386/idt.h>
 #include <arch/i386/gdt.h>
+#include <mmu.h>
 #include <printf.h>
 #include <version.h>
 #include <multiboot.h>
@@ -18,6 +19,7 @@ void kmain(struct multiboot_info *mboot_info, uint32_t mboot_magic) {
     
     gdt_install();
     idt_install();
+    mmu_install(mboot_info);
 
     __asm__ volatile ("cli");
     for (;;) __asm__ volatile ("hlt");

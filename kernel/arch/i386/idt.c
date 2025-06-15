@@ -1,6 +1,7 @@
 #include <printf.h>
 #include <stdint.h>
 #include <arch/i386/idt.h>
+#include <arch/i386/pic.h>
 
 __attribute__((aligned(0x10)))
 struct idt_entry idt_entries[256];
@@ -55,6 +56,9 @@ void idt_install(void) {
 
     asm volatile ("lidt %0" :: "m"(idt_descriptor));
     printf("%s:%d: IDT address: 0x%p\n", __FILE__, __LINE__, (uint32_t)&idt_descriptor);
+
+    pic_install(0x20, 0x28);
+    asm volatile ("sti");
 }
 
 void idt_reinstall(void) {
