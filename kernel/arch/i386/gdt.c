@@ -2,20 +2,6 @@
 #include <printf.h>
 #include <arch/i386/gdt.h>
 
-struct gdt_entry {
-    uint16_t limit;
-    uint16_t base_low;
-    uint8_t  base_mid;
-    uint8_t  access;
-    uint8_t  gran;
-    uint8_t  base_high;
-} __attribute__((packed));
-
-struct gdtr {
-    uint16_t size;
-    uint32_t offset;
-} __attribute__((packed));
-
 struct gdt_entry gdt_entries[5];
 struct gdtr gdt_descriptor;
 

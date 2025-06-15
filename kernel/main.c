@@ -1,3 +1,4 @@
+#include <arch/i386/idt.h>
 #include <arch/i386/gdt.h>
 #include <printf.h>
 #include <version.h>
@@ -16,6 +17,7 @@ void kmain(struct multiboot_info *mboot_info, uint32_t mboot_magic) {
         __kernel_version_patch, __kernel_build_date, __kernel_build_time);
     
     gdt_install();
+    idt_install();
 
     __asm__ volatile ("cli");
     for (;;) __asm__ volatile ("hlt");
