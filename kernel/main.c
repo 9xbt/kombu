@@ -1,6 +1,7 @@
 #include <arch/i386/idt.h>
 #include <arch/i386/gdt.h>
 #include <mmu.h>
+#include <malloc.h>
 #include <printf.h>
 #include <version.h>
 #include <multiboot.h>
@@ -20,6 +21,10 @@ void kmain(struct multiboot_info *mboot_info, uint32_t mboot_magic) {
     gdt_install();
     idt_install();
     mmu_install(mboot_info);
+    kernel_heap = heap_initialize();
+
+    uintptr_t *fault = (uintptr_t *)0xdeadbeef;
+    *fault = 123;
 
     __asm__ volatile ("cli");
     for (;;) __asm__ volatile ("hlt");

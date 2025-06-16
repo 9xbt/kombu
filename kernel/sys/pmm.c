@@ -59,7 +59,6 @@ void pmm_install(struct multiboot_info *mbd) {
         mmmt = (struct multiboot_memory_map *) (mbd->mmap_addr + i);
 
         if (mmmt->type == MULTIBOOT_MEMORY_AVAILABLE) {
-            // Mark pages as available in bitmap
             for (uint64_t j = 0; j < mmmt->len_low; j += PAGE_SIZE) {
                 bitmap_clear(mmu_bitmap, (mmmt->addr_low + j) / PAGE_SIZE);
             }

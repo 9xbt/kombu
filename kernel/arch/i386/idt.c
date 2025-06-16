@@ -97,6 +97,7 @@ void isr_handler(struct registers r) {
     if (r.int_no == 14) {
         uint32_t cr2;
         asm volatile("mov %%cr2, %0" : "=r" (cr2));
+        printf("%s:%d: Faulting address: 0x%p\n", __FILE__, __LINE__, cr2);
 
         printf("%s:%d: %s %s %s\n", __FILE__, __LINE__,
             r.err_code & 0x01 ? "Page-protection violation," : "Page not present,",
